@@ -25,6 +25,10 @@ test("keeps the v2 review pane mounted when switching session tabs in a workspac
   await expectSessionTitle(page, titleA)
 
   await page.getByRole("button", { name: "Toggle review" }).click()
+  const reviewTab = page.getByRole("tab", { name: /Review/ })
+  const reviewTabPanel = page.getByRole("tabpanel", { name: /Review/ })
+  await expect(reviewTab).toHaveAttribute("aria-controls", "session-side-panel-review-tabpanel")
+  await expect(reviewTabPanel).toHaveAttribute("id", "session-side-panel-review-tabpanel")
   const review = page.locator('#review-panel [data-component="session-review-v2"]')
   await expectAppVisible(review)
   await expectAppVisible(page.getByRole("button", { name: /example\.ts/ }))
@@ -33,11 +37,13 @@ test("keeps the v2 review pane mounted when switching session tabs in a workspac
   await switchTab(page, titleB)
   await expectSessionTitle(page, titleB)
   await expectAppVisible(review)
+  await expectAppVisible(page.getByRole("button", { name: /example\.ts/ }))
   expect(await readProbe(page)).toBe(PROBE)
 
   await switchTab(page, titleA)
   await expectSessionTitle(page, titleA)
   await expectAppVisible(review)
+  await expectAppVisible(page.getByRole("button", { name: /example\.ts/ }))
   expect(await readProbe(page)).toBe(PROBE)
 })
 
